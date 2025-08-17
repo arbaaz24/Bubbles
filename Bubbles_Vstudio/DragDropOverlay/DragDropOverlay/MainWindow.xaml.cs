@@ -9,13 +9,14 @@ using System.Linq;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media.Animation;
+using Microsoft.Win32;
 
 namespace DragDropOverlay
 {
     public partial class MainWindow : Window
     {
         private List<string> _files = new();
-        private Point? _dragStartPoint; // for starting OS drag when moving over the badge
+        private Point? _dragStartPoint;
         private bool _isDraggingFiles;
 
         public MainWindow()
@@ -32,7 +33,6 @@ namespace DragDropOverlay
                 FileManager.EnsureSampleFile();
                 ReloadFiles();
 
-                // Start the pulse animation
                 if (Resources["PulseStoryboard"] is Storyboard sb)
                 {
                     sb.Begin(this, true);
@@ -52,22 +52,19 @@ namespace DragDropOverlay
 
         private void StartFileDrag()
         {
-            if (_isDraggingFiles) return; // prevent reentry
+            if (_isDraggingFiles) return;
 
             var existing = _files.Where(File.Exists).ToArray();
             if (existing.Length == 0)
             {
-                MessageBox.Show("No files in temp folder. Click 'Open Folder' and add some files.");
+                MessageBox.Show("No files in temp folder. Drag some files into the bubble.");
                 return;
             }
 
             try
             {
                 _isDraggingFiles = true;
-                // Build a DataObject with the FileDrop format — this is the real CF_HDROP drag that other apps accept.
                 var data = new DataObject(DataFormats.FileDrop, existing);
-
-                // Effects: Copy (most uploaders copy). You can include Move if needed: Copy | Move.
                 DragDrop.DoDragDrop(Badge, data, DragDropEffects.Copy);
             }
             finally
@@ -76,19 +73,12 @@ namespace DragDropOverlay
             }
         }
 
-        // =============================
-        // Overlay movement (grab the empty background to move window)
-        // =============================
         private void Root_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
-            // If the click started on the badge, ignore (badge has its own handlers)
             if (e.OriginalSource is FrameworkElement fe && fe.Name == "Badge") return;
-            try { DragMove(); } catch { /* ignore */ }
+            try { DragMove(); } catch { }
         }
 
-        // =============================
-        // Badge drag logic — click and move threshold to start file drag
-        // =============================
         private void Badge_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
             _dragStartPoint = e.GetPosition(this);
@@ -105,9 +95,7 @@ namespace DragDropOverlay
 
             if (dx > SystemParameters.MinimumHorizontalDragDistance || dy > SystemParameters.MinimumVerticalDragDistance)
             {
-                // Start OS drag
                 StartFileDrag();
-                // After DoDragDrop returns, reset state
                 _dragStartPoint = null;
                 Badge.ReleaseMouseCapture();
             }
@@ -119,12 +107,21 @@ namespace DragDropOverlay
             Badge.ReleaseMouseCapture();
         }
 
-        // =============================
-        // Buttons
-        // =============================
-        private void Reload_Click(object sender, RoutedEventArgs e)
+        private void Reload_Click(object sender, RoutedEventArgs e) => ReloadFiles();
+
+        private void AddFiles_Click(object sender, RoutedEventArgs e)
         {
-            ReloadFiles();
+            var dlg = new OpenFileDialog
+            {
+                Multiselect = true,
+                Title = "Select files to add to temp folder"
+            };
+
+            if (dlg.ShowDialog() == true)
+            {
+                FileManager.SaveDroppedFiles(dlg.FileNames);
+                ReloadFiles();
+            }
         }
 
         private void OpenFolder_Click(object sender, RoutedEventArgs e)
@@ -145,9 +142,31 @@ namespace DragDropOverlay
             }
         }
 
-        private void Exit_Click(object sender, RoutedEventArgs e)
+        private void Exit_Click(object sender, RoutedEventArgs e) => Close();
+
+        // Handle drag-over so cursor shows Copy effect
+        private void Badge_DragOver(object sender, DragEventArgs e)
         {
-            Close();
+            if (e.Data.GetDataPresent(DataFormats.FileDrop))
+                e.Effects = DragDropEffects.Copy;
+            else
+                e.Effects = DragDropEffects.None;
+            e.Handled = true;
         }
+
+        // Handle drop: copy files into temp dir
+        private void Badge_Drop(object sender, DragEventArgs e)
+        {
+            if (e.Data.GetDataPresent(DataFormats.FileDrop))
+            {
+                var files = (string[])e.Data.GetData(DataFormats.FileDrop);
+                FileManager.SaveDroppedFiles(files);
+                ReloadFiles();
+            }
+        }
+
+        // Allow dropping anywhere on window background
+        private void Window_DragOver(object sender, DragEventArgs e) => Badge_DragOver(sender, e);
+        private void Window_Drop(object sender, DragEventArgs e) => Badge_Drop(sender, e);
     }
 }

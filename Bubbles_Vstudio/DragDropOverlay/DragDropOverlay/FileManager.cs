@@ -1,8 +1,4 @@
-﻿// =============================
-// File: FileManager.cs
-// Purpose: create temp folder, list files, (optionally) seed a sample file
-// =============================
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -21,19 +17,32 @@ namespace DragDropOverlay
         public static List<string> GetFiles()
         {
             EnsureFolder();
-            // Return only existing files (ignore temp locks)
-            var files = Directory.EnumerateFiles(TempDir).Where(File.Exists).ToList();
-            return files;
+            return Directory.EnumerateFiles(TempDir).Where(File.Exists).ToList();
         }
 
         public static void EnsureSampleFile()
         {
             EnsureFolder();
-            var files = Directory.EnumerateFiles(TempDir);
-            if (!files.Any())
+            if (!Directory.EnumerateFiles(TempDir).Any())
             {
                 var sample = Path.Combine(TempDir, "sample.txt");
                 File.WriteAllText(sample, "Drop me into Slack/WhatsApp Web/Drive to test.\r\n" + DateTime.Now);
+            }
+        }
+
+        // Save incoming files into temp folder
+        public static void SaveDroppedFiles(string[] files)
+        {
+            EnsureFolder();
+            foreach (var f in files)
+            {
+                try
+                {
+                    var fileName = Path.GetFileName(f);
+                    var destPath = Path.Combine(TempDir, fileName);
+                    File.Copy(f, destPath, overwrite: true);
+                }
+                catch { /* ignore individual file errors */ }
             }
         }
     }
