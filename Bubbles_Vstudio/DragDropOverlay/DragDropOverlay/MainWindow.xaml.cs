@@ -1,15 +1,16 @@
 ﻿// =============================
 // File: MainWindow.xaml.cs
 // =============================
+using Microsoft.Win32;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media.Animation;
-using Microsoft.Win32;
 
 namespace DragDropOverlay
 {
@@ -31,9 +32,11 @@ namespace DragDropOverlay
             {
                 FileManager.EnsureFolder();
                 FileManager.EnsureSampleFile();
-                ReloadFiles();
+                ReloadFiles(); //Reads files from the folder and updates the UI count
 
-                if (Resources["PulseStoryboard"] is Storyboard sb)
+                // So checking if in xaml there is a Storyboard with the name PulseStoryboard
+                // and if it exists, assign it to sb and start it.
+                if (Resources["PulseStoryboard"] is Storyboard sb) 
                 {
                     sb.Begin(this, true);
                 }
@@ -48,6 +51,16 @@ namespace DragDropOverlay
         {
             _files = FileManager.GetFiles();
             CountText.Text = _files.Count == 1 ? "1 item" : $"{_files.Count} items";
+
+            if (_files.Count == 0)
+            {
+                Badge.ToolTip = "No files in temp folder.";
+            }
+            else
+            {
+                var names = _files.Select(Path.GetFileName);
+                Badge.ToolTip = string.Join("\n", names);
+            }
         }
 
         private void StartFileDrag()
@@ -168,5 +181,17 @@ namespace DragDropOverlay
         // Allow dropping anywhere on window background
         private void Window_DragOver(object sender, DragEventArgs e) => Badge_DragOver(sender, e);
         private void Window_Drop(object sender, DragEventArgs e) => Badge_Drop(sender, e);
+
+        private void Badge_ToolTipOpening(object sender, ToolTipEventArgs e)
+        {
+            if (_files == null || _files.Count == 0)
+            {
+                Badge.ToolTip = "No files in temp folder.";
+                return;
+            }
+
+            var names = _files.Select(Path.GetFileName).ToList();
+            Badge.ToolTip = string.Join("\n", names);
+        }
     }
 }

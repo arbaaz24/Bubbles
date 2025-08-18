@@ -1,10 +1,10 @@
-﻿ <!-- =============================
+﻿<!-- =============================
 // File: MainWindow.xaml
 // =============================<?xml version="1.0" encoding="utf-8"?>-->
 <Window x:Class="DragDropOverlay.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="DragDrop Overlay" Width="240" Height="280"
+        Title="DragDrop Overlay" Width="228" Height="192"
         WindowStyle="None" AllowsTransparency="True" Background="#01000000"
         Topmost="True" ResizeMode="NoResize" ShowInTaskbar="True"
         AllowDrop="True" Drop="Window_Drop" DragOver="Window_DragOver">
@@ -18,19 +18,25 @@
     </Window.Resources>
 
     <Grid x:Name="Root" Background="Transparent" 
-          MouseLeftButtonDown="Root_MouseLeftButtonDown">
+          MouseLeftButtonDown="Root_MouseLeftButtonDown" VerticalAlignment="Top" HorizontalAlignment="Center" 
+          Height="240" Width="306" Margin="0,10,0,0">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="7*"/>
+            <ColumnDefinition Width="93*"/>
+        </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
             <RowDefinition/>
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
 
-        <Border x:Name="Badge" Width="140" Height="140" CornerRadius="70"
-                HorizontalAlignment="Center" VerticalAlignment="Center"
-                Background="#FF4C7DFF" Opacity="0.93"
-                MouseLeftButtonDown="Badge_MouseLeftButtonDown"
-                MouseMove="Badge_MouseMove"
-                MouseLeftButtonUp="Badge_MouseLeftButtonUp"
-                AllowDrop="True" Drop="Badge_Drop" DragOver="Badge_DragOver">
+        <Border x:Name="Badge" Width="100" Height="100" CornerRadius="50"
+        HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="0,0,120,120" Background="#FF4C7DFF" Opacity="0.83"
+        MouseLeftButtonDown="Badge_MouseLeftButtonDown"
+        MouseMove="Badge_MouseMove"
+        MouseLeftButtonUp="Badge_MouseLeftButtonUp"
+        AllowDrop="True" Drop="Badge_Drop" DragOver="Badge_DragOver"
+        ToolTip="Loading.." Grid.Column="1">
+
             <Border.Effect>
                 <DropShadowEffect ShadowDepth="0" BlurRadius="20" Opacity="0.6"/>
             </Border.Effect>
@@ -44,11 +50,11 @@
             </StackPanel>
         </Border>
 
-        <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,8,0,8" Width="300" >
-            <Button Content="Reload" Click="Reload_Click" Padding="10,4" Margin="4"/>
-            <Button Content="Add Files" Click="AddFiles_Click" Padding="10,4" Margin="4"/>
-            <Button Content="Open Folder" Click="OpenFolder_Click" Padding="10,8" Margin="4"/>
-            <Button Content="Exit" Click="Exit_Click" Padding="10,4" Margin="4"/>
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" Margin="26,125,0,72" Width="278" Grid.Column="1" >
+            <Button Content="Reload" Click="Reload_Click" Padding="1,1" Margin="1"/>
+            <Button Content="Add Files" Click="AddFiles_Click" Padding="1,1" Margin="1"/>
+            <Button Content="Open Folder" Click="OpenFolder_Click" Padding="1,1" Margin="1"/>
+            <Button Content="Exit" Click="Exit_Click" Padding="1,1" Margin="1"/>
         </StackPanel>
     </Grid>
 </Window>
