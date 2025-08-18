@@ -19,10 +19,11 @@
 
     <Grid x:Name="Root" Background="Transparent" 
           MouseLeftButtonDown="Root_MouseLeftButtonDown" VerticalAlignment="Top" HorizontalAlignment="Center" 
-          Height="240" Width="306" Margin="0,10,0,0">
+          Height="224" Width="284" Margin="0,10,0,0">
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="7*"/>
-            <ColumnDefinition Width="93*"/>
+            <ColumnDefinition Width="21*"/>
+            <ColumnDefinition Width="202*"/>
+            <ColumnDefinition Width="83*"/>
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
             <RowDefinition/>
@@ -30,7 +31,7 @@
         </Grid.RowDefinitions>
 
         <Border x:Name="Badge" Width="100" Height="100" CornerRadius="50"
-        HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="0,0,120,120" Background="#FF4C7DFF" Opacity="0.83"
+        HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="0,0,37,120" Background="#FF4C7DFF" Opacity="0.83"
         MouseLeftButtonDown="Badge_MouseLeftButtonDown"
         MouseMove="Badge_MouseMove"
         MouseLeftButtonUp="Badge_MouseLeftButtonUp"
@@ -44,17 +45,21 @@
                 <ScaleTransform x:Name="BadgeScale" ScaleX="1" ScaleY="1"/>
             </Border.RenderTransform>
             <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
+                <Button Content="✕" Foreground="Red" FontWeight="Bold" FontSize="16"
+                Click="Exit_Click" Margin="60,0,0,0"
+                Width="23" Height="25"
+                />
                 <TextBlock Text="Drag Files" FontSize="22" FontWeight="Bold" Foreground="White" HorizontalAlignment="Center"/>
                 <TextBlock x:Name="CountText" Text="0 items" FontSize="14" Foreground="#F0F0F0" HorizontalAlignment="Center"/>
                 <TextBlock Text="(from %TEMP%)" FontSize="12" Foreground="#DDE" HorizontalAlignment="Center"/>
             </StackPanel>
         </Border>
 
-        <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" Margin="26,125,0,72" Width="278" Grid.Column="1" >
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" Margin="26,125,0,72" Width="278" Grid.Column="1" Grid.ColumnSpan="2" >
             <Button Content="Reload" Click="Reload_Click" Padding="1,1" Margin="1"/>
             <Button Content="Add Files" Click="AddFiles_Click" Padding="1,1" Margin="1"/>
             <Button Content="Open Folder" Click="OpenFolder_Click" Padding="1,1" Margin="1"/>
-            <Button Content="Exit" Click="Exit_Click" Padding="1,1" Margin="1"/>
+
         </StackPanel>
     </Grid>
 </Window>
