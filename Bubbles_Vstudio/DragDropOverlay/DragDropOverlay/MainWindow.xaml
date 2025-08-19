@@ -10,50 +10,54 @@
         AllowDrop="True" Drop="Window_Drop" DragOver="Window_DragOver">
     <Window.Resources>
         <Storyboard x:Key="PulseStoryboard" RepeatBehavior="Forever" AutoReverse="True">
-            <DoubleAnimation Storyboard.TargetName="BubbleScale" Storyboard.TargetProperty="ScaleX"
+            <DoubleAnimation Storyboard.TargetProperty="RenderTransform.(ScaleTransform.ScaleX)"
                              From="1.0" To="1.1" Duration="0:0:1.2"/>
-            <DoubleAnimation Storyboard.TargetName="BubbleScale" Storyboard.TargetProperty="ScaleY"
+            <DoubleAnimation Storyboard.TargetProperty="RenderTransform.(ScaleTransform.ScaleY)"
                              From="1.0" To="1.1" Duration="0:0:1.2"/>
         </Storyboard>
+
+        <!-- Bubble style matching original appearance -->
+        <Style x:Key="BubbleStyle" TargetType="Border">
+            <Setter Property="Width" Value="70"/>
+            <Setter Property="Height" Value="70"/>
+            <Setter Property="CornerRadius" Value="35"/>
+            <Setter Property="Margin" Value="0,15,0,0"/>
+            <Setter Property="HorizontalAlignment" Value="Center"/>
+            <Setter Property="VerticalAlignment" Value="Top"/>
+            <Setter Property="Background" Value="#FF4C7DFF"/>
+            <Setter Property="Opacity" Value="0.83"/>
+            <Setter Property="AllowDrop" Value="True"/>
+            <Setter Property="Effect">
+                <Setter.Value>
+                    <DropShadowEffect ShadowDepth="0" BlurRadius="20" Opacity="0.6"/>
+                </Setter.Value>
+            </Setter>
+            <Setter Property="RenderTransform">
+                <Setter.Value>
+                    <ScaleTransform ScaleX="1" ScaleY="1"/>
+                </Setter.Value>
+            </Setter>
+        </Style>
     </Window.Resources>
 
-    <Grid x:Name="Root" Background="Transparent"  
-          MouseLeftButtonDown="Root_MouseLeftButtonDown" VerticalAlignment="Center"  HorizontalAlignment="Center" Height="Auto">
+    <Grid x:Name="Root" Background="Transparent"
+          MouseLeftButtonDown="Root_MouseLeftButtonDown"
+          VerticalAlignment="Center" HorizontalAlignment="Center" Height="Auto">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
 
-        <WrapPanel HorizontalAlignment="Center" VerticalAlignment="Center" Orientation="Vertical">
-            <!--the complete border tag is the bubble UI code-->
-            <Border x:Name="Bubble" Width="70" Height="70" CornerRadius="35" Margin="0,15,0,0"
-                HorizontalAlignment="Center" VerticalAlignment="Top" Background="#FF4C7DFF" Opacity="0.83"
-                MouseLeftButtonDown="Bubble_MouseLeftButtonDown"
-                MouseMove="Bubble_MouseMove"
-                MouseLeftButtonUp="Bubble_MouseLeftButtonUp"
-                AllowDrop="True" Drop="Bubble_Drop" DragOver="Bubble_DragOver"
-                ToolTip="Loading.." Grid.Column="1">
+        <!-- Dynamic bubbles container -->
+        <WrapPanel x:Name="BubblesPanel" HorizontalAlignment="Center" VerticalAlignment="Center"
+                   Orientation="Horizontal" Grid.Row="0" Margin="10"/>
 
-                <Border.Effect>
-                    <DropShadowEffect ShadowDepth="0" BlurRadius="20" Opacity="0.6"/>
-                </Border.Effect>
-                <Border.RenderTransform>
-                    <ScaleTransform x:Name="BubbleScale" ScaleX="1" ScaleY="1"/>
-                </Border.RenderTransform>
-
-                <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
-                    <Button Content="✕" Foreground="Red" FontWeight="Bold" FontSize="18" Click="Exit_Click" Margin="50,-25,0,0" Width="21" Height="24"/>
-                    <TextBlock Text="Drag Files" FontSize="12" FontWeight="Bold" Foreground="White" HorizontalAlignment="Center"  />
-                    <TextBlock x:Name="CountText" Text="0 items" FontSize="14" Foreground="#F0F0F0" HorizontalAlignment="Center"/>
-                    <!--TextBlock Text="(from %TEMP%)" FontSize="12" Foreground="#DDE" HorizontalAlignment="Center"/-->
-                </StackPanel>
-            </Border>
-        </WrapPanel>
-
-        <StackPanel Orientation="Horizontal" HorizontalAlignment="Left"  Width="Auto" Grid.Row="1">
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" Width="Auto" Grid.Row="1">
             <Button Content="Reload" Click="Reload_Click" Padding="1,1" Margin="1"/>
             <Button Content="Add Files" Click="AddFiles_Click" Padding="1,1" Margin="1"/>
             <Button Content="Open Folder" Click="OpenFolder_Click" Padding="1,1" Margin="1"/>
+            <Button x:Name="AddBubbleButton" Content="Add Bubble" Click="AddBubble_Click"
+                    Padding="1,1" Margin="1"/>
         </StackPanel>
     </Grid>
 </Window>

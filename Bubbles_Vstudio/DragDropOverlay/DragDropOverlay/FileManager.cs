@@ -17,35 +17,49 @@ namespace DragDropOverlay
             Directory.CreateDirectory(TempDir);
         }
 
-        public static List<string> GetFiles()
+        public static void EnsureSubFolder(int bubbleId)
         {
             EnsureFolder();
-            return Directory.EnumerateFiles(TempDir).Where(File.Exists).ToList();
+            if (bubbleId == 0) return; // root
+            var path = GetBubblePath(bubbleId);
+            Directory.CreateDirectory(path); // idempotent
         }
 
-        public static void EnsureSampleFile()
+        private static string GetBubblePath(int bubbleId) =>
+            bubbleId == 0 ? TempDir : Path.Combine(TempDir, $"Bubble_{bubbleId}");
+
+        public static List<string> GetFiles(int bubbleId)
         {
-            EnsureFolder();
-            if (!Directory.EnumerateFiles(TempDir).Any())
-            {
-                var sample = Path.Combine(TempDir, "sample.txt");
-                File.WriteAllText(sample, "Drop me into Slack/WhatsApp Web/Drive to test.\r\n" + DateTime.Now);
-            }
+            var path = GetBubblePath(bubbleId);
+            if (!Directory.Exists(path)) return new List<string>();
+            return Directory.EnumerateFiles(path).Where(File.Exists).ToList();
         }
 
         // Save incoming files into temp folder
-        public static void SaveDroppedFiles(string[] files)
+        public static void SaveDroppedFiles(int bubbleId, string[] files)
         {
-            EnsureFolder();
+            EnsureSubFolder(bubbleId);
+            var path = GetBubblePath(bubbleId);
             foreach (var f in files)
             {
                 try
                 {
-                    var fileName = Path.GetFileName(f);
-                    var destPath = Path.Combine(TempDir, fileName);
-                    File.Copy(f, destPath, overwrite: true);
+                    var name = Path.GetFileName(f);
+                    var dest = Path.Combine(path, name);
+                    File.Copy(f, dest, overwrite: true);
                 }
                 catch { /* ignore individual file errors */ }
+            }
+        }
+
+        public static void ClearBubble(int bubbleId)
+        {
+            EnsureSubFolder(bubbleId);
+            var path = GetBubblePath(bubbleId);
+            if (!Directory.Exists(path)) return;
+            foreach (var f in Directory.EnumerateFiles(path))
+            {
+                try { File.Delete(f); } catch { }
             }
         }
     }
