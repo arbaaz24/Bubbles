@@ -1,5 +1,6 @@
 ﻿// =============================
-// File: MainWindow.xaml.cs
+// File: FileManager.cs
+// Purpose: handle temp folders, list files, and add dropped files per bubble
 // =============================
 using System;
 using System.Collections.Generic;
@@ -10,43 +11,56 @@ namespace DragDropOverlay
 {
     public static class FileManager
     {
-        public static readonly string TempDir = Path.Combine(Path.GetTempPath(), "DragDropOverlay");
-
-        public static void EnsureFolder()
+        private static string GetBubbleDir(int bubbleIndex)
         {
-            Directory.CreateDirectory(TempDir);
+            return Path.Combine(Path.GetTempPath(), $"DragDropOverlay_Bubble{bubbleIndex}");
         }
 
-        public static List<string> GetFiles()
+        public static void EnsureFolder(int bubbleIndex)
         {
-            EnsureFolder();
-            return Directory.EnumerateFiles(TempDir).Where(File.Exists).ToList();
+            Directory.CreateDirectory(GetBubbleDir(bubbleIndex));
         }
 
-        public static void EnsureSampleFile()
+        public static List<string> GetFiles(int bubbleIndex)
         {
-            EnsureFolder();
-            if (!Directory.EnumerateFiles(TempDir).Any())
+            EnsureFolder(bubbleIndex);
+            return Directory.EnumerateFiles(GetBubbleDir(bubbleIndex)).Where(File.Exists).ToList();
+        }
+
+        public static void ClearFiles(int bubbleIndex)
+        {
+            EnsureFolder(bubbleIndex);
+            foreach (var f in Directory.GetFiles(GetBubbleDir(bubbleIndex)))
             {
-                var sample = Path.Combine(TempDir, "sample.txt");
-                File.WriteAllText(sample, "Drop me into Slack/WhatsApp Web/Drive to test.\r\n" + DateTime.Now);
+                try { File.Delete(f); } catch { }
             }
         }
 
-        // Save incoming files into temp folder
-        public static void SaveDroppedFiles(string[] files)
+        public static void EnsureSampleFile(int bubbleIndex)
         {
-            EnsureFolder();
+            EnsureFolder(bubbleIndex);
+            if (!Directory.EnumerateFiles(GetBubbleDir(bubbleIndex)).Any())
+            {
+                var sample = Path.Combine(GetBubbleDir(bubbleIndex), $"sample{bubbleIndex}.txt");
+                File.WriteAllText(sample, $"Sample file for Bubble {bubbleIndex} - {DateTime.Now}");
+            }
+        }
+
+        public static void SaveDroppedFiles(int bubbleIndex, string[] files)
+        {
+            EnsureFolder(bubbleIndex);
             foreach (var f in files)
             {
                 try
                 {
                     var fileName = Path.GetFileName(f);
-                    var destPath = Path.Combine(TempDir, fileName);
+                    var destPath = Path.Combine(GetBubbleDir(bubbleIndex), fileName);
                     File.Copy(f, destPath, overwrite: true);
                 }
-                catch { /* ignore individual file errors */ }
+                catch { }
             }
         }
+
+        public static string GetFolderPath(int bubbleIndex) => GetBubbleDir(bubbleIndex);
     }
 }

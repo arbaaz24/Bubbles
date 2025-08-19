@@ -1,24 +1,22 @@
 ﻿// =============================
 // File: MainWindow.xaml.cs
 // =============================
-using Microsoft.Win32;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Windows;
-using System.Windows.Controls;
 using System.Windows.Input;
-using System.Windows.Media.Animation;
 
 namespace DragDropOverlay
 {
     public partial class MainWindow : Window
     {
-        private List<string> _files = new();
+        private Dictionary<int, List<string>> _files = new();
         private Point? _dragStartPoint;
         private bool _isDraggingFiles;
+        private int _activeBubble = 1;
 
         public MainWindow()
         {
@@ -28,48 +26,33 @@ namespace DragDropOverlay
 
         private void MainWindow_Loaded(object sender, RoutedEventArgs e)
         {
-            try
+            for (int i = 1; i <= 3; i++)
             {
-                FileManager.EnsureFolder();
-                ReloadFiles(); //Reads files from the folder and updates the UI count
-
-                // So checking if in xaml there is a Storyboard with the name PulseStoryboard
-                // and if it exists, assign it to sb and start it.
-                if (Resources["PulseStoryboard"] is Storyboard sb) 
-                {
-                    sb.Begin(this, true);
-                }
+                FileManager.EnsureFolder(i);
+                FileManager.EnsureSampleFile(i);
             }
-            catch (Exception ex)
-            {
-                MessageBox.Show("Init error: " + ex.Message);
-            }
+            ReloadFiles();
         }
 
         private void ReloadFiles()
         {
-            _files = FileManager.GetFiles();
-            CountText.Text = _files.Count == 1 ? "1 item" : $"{_files.Count} items";
+            for (int i = 1; i <= 3; i++)
+            {
+                _files[i] = FileManager.GetFiles(i);
+            }
 
-            if (_files.Count == 0)
-            {
-                Bubble.ToolTip = "No files in temp folder.";
-            }
-            else
-            {
-                var names = _files.Select(Path.GetFileName);
-                Bubble.ToolTip = string.Join("\n", names);
-            }
+            CountText1.Text = _files[1].Count == 1 ? "1 item" : $"{_files[1].Count} items";
+            CountText2.Text = _files[2].Count == 1 ? "1 item" : $"{_files[2].Count} items";
+            CountText3.Text = _files[3].Count == 1 ? "1 item" : $"{_files[3].Count} items";
         }
 
-        private void StartFileDrag()
+        private void StartFileDrag(int bubbleIndex)
         {
             if (_isDraggingFiles) return;
-
-            var existing = _files.Where(File.Exists).ToArray();
+            var existing = _files[bubbleIndex].Where(File.Exists).ToArray();
             if (existing.Length == 0)
             {
-                MessageBox.Show("No files in temp folder. Drag some files into the bubble.");
+                MessageBox.Show($"No files in Bubble {bubbleIndex}. Drop some files into the bubble.");
                 return;
             }
 
@@ -77,7 +60,7 @@ namespace DragDropOverlay
             {
                 _isDraggingFiles = true;
                 var data = new DataObject(DataFormats.FileDrop, existing);
-                DragDrop.DoDragDrop(Bubble, data, DragDropEffects.Copy);
+                DragDrop.DoDragDrop(this, data, DragDropEffects.Copy);
             }
             finally
             {
@@ -87,17 +70,19 @@ namespace DragDropOverlay
 
         private void Root_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
-            if (e.OriginalSource is FrameworkElement fe && fe.Name == "Bubble") return;
             try { DragMove(); } catch { }
         }
 
-        private void Bubble_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        private void Badge_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
             _dragStartPoint = e.GetPosition(this);
-            Bubble.CaptureMouse();
+            if (sender == Badge1) _activeBubble = 1;
+            else if (sender == Badge2) _activeBubble = 2;
+            else if (sender == Badge3) _activeBubble = 3;
+            (sender as UIElement)?.CaptureMouse();
         }
 
-        private void Bubble_MouseMove(object sender, MouseEventArgs e)
+        private void Badge_MouseMove(object sender, MouseEventArgs e)
         {
             if (e.LeftButton != MouseButtonState.Pressed || _dragStartPoint == null) return;
 
@@ -107,57 +92,33 @@ namespace DragDropOverlay
 
             if (dx > SystemParameters.MinimumHorizontalDragDistance || dy > SystemParameters.MinimumVerticalDragDistance)
             {
-                StartFileDrag();
+                StartFileDrag(_activeBubble);
                 _dragStartPoint = null;
-                Bubble.ReleaseMouseCapture();
+                (sender as UIElement)?.ReleaseMouseCapture();
             }
         }
 
-        private void Bubble_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
+        private void Badge_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
         {
             _dragStartPoint = null;
-            Bubble.ReleaseMouseCapture();
+            (sender as UIElement)?.ReleaseMouseCapture();
         }
 
         private void Reload_Click(object sender, RoutedEventArgs e) => ReloadFiles();
 
         private void AddFiles_Click(object sender, RoutedEventArgs e)
         {
-            var dlg = new OpenFileDialog
-            {
-                Multiselect = true,
-                Title = "Select files to add to temp folder"
-            };
-
+            var dlg = new Microsoft.Win32.OpenFileDialog { Multiselect = true, Title = "Select files to add to Bubble 1" };
             if (dlg.ShowDialog() == true)
             {
-                FileManager.SaveDroppedFiles(dlg.FileNames);
+                FileManager.SaveDroppedFiles(1, dlg.FileNames);
                 ReloadFiles();
-            }
-        }
-
-        private void OpenFolder_Click(object sender, RoutedEventArgs e)
-        {
-            try
-            {
-                FileManager.EnsureFolder();
-                Process.Start(new ProcessStartInfo
-                {
-                    FileName = FileManager.TempDir,
-                    UseShellExecute = true,
-                    Verb = "open"
-                });
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show("Open folder failed: " + ex.Message);
             }
         }
 
         private void Exit_Click(object sender, RoutedEventArgs e) => Close();
 
-        // Handle drag-over so cursor shows Copy effect
-        private void Bubble_DragOver(object sender, DragEventArgs e)
+        private void Badge_DragOver(object sender, DragEventArgs e)
         {
             if (e.Data.GetDataPresent(DataFormats.FileDrop))
                 e.Effects = DragDropEffects.Copy;
@@ -166,31 +127,32 @@ namespace DragDropOverlay
             e.Handled = true;
         }
 
-        // Handle drop: copy files into temp dir
-        private void Bubble_Drop(object sender, DragEventArgs e)
+        private void Badge_Drop(object sender, DragEventArgs e)
         {
-            if (e.Data.GetDataPresent(DataFormats.FileDrop))
-            {
-                var files = (string[])e.Data.GetData(DataFormats.FileDrop);
-                FileManager.SaveDroppedFiles(files);
-                ReloadFiles();
-            }
+            if (!e.Data.GetDataPresent(DataFormats.FileDrop)) return;
+            var files = (string[])e.Data.GetData(DataFormats.FileDrop);
+
+            int bubbleIndex = sender == Badge1 ? 1 : sender == Badge2 ? 2 : 3;
+            FileManager.SaveDroppedFiles(bubbleIndex, files);
+            ReloadFiles();
         }
 
-        // Allow dropping anywhere on window background
-        private void Window_DragOver(object sender, DragEventArgs e) => Bubble_DragOver(sender, e);
-        private void Window_Drop(object sender, DragEventArgs e) => Bubble_Drop(sender, e);
-
-        private void Bubble_ToolTipOpening(object sender, ToolTipEventArgs e)
+        private void Clear1_Click(object sender, RoutedEventArgs e)
         {
-            if (_files == null || _files.Count == 0)
-            {
-                Bubble.ToolTip = "No files in temp folder.";
-                return;
-            }
+            FileManager.ClearFiles(1);
+            ReloadFiles();
+        }
 
-            var names = _files.Select(Path.GetFileName).ToList();
-            Bubble.ToolTip = string.Join("\n", names);
+        private void Clear2_Click(object sender, RoutedEventArgs e)
+        {
+            FileManager.ClearFiles(2);
+            ReloadFiles();
+        }
+
+        private void Clear3_Click(object sender, RoutedEventArgs e)
+        {
+            FileManager.ClearFiles(3);
+            ReloadFiles();
         }
     }
 }
