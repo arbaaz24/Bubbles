@@ -46,18 +46,22 @@
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
+            <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
 
         <!-- Dynamic bubbles container -->
         <WrapPanel x:Name="BubblesPanel" HorizontalAlignment="Center" VerticalAlignment="Center"
-                   Orientation="Horizontal" Grid.Row="0" Margin="10"/>
+                   Orientation="Vertical" Grid.Row="0" Margin="10"/>
 
         <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" Width="Auto" Grid.Row="1">
-            <Button Content="Reload" Click="Reload_Click" Padding="1,1" Margin="1"/>
             <Button Content="Add Files" Click="AddFiles_Click" Padding="1,1" Margin="1"/>
             <Button Content="Open Folder" Click="OpenFolder_Click" Padding="1,1" Margin="1"/>
             <Button x:Name="AddBubbleButton" Content="Add Bubble" Click="AddBubble_Click"
                     Padding="1,1" Margin="1"/>
+        </StackPanel>
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" Width="Auto" Grid.Row="2">
+            <Button Content="Reload" Click="Reload_Click" Padding="1,1" Margin="1" Grid.Row="2"/>
+            <Button Content="Kill" Click="Kill_Click" Padding="1,1" Margin="20,0,0,0" Grid.Row="2"/>
         </StackPanel>
     </Grid>
 </Window>

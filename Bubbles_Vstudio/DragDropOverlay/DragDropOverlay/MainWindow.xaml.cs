@@ -65,18 +65,38 @@ namespace DragDropOverlay
                 ToolTip = "Loading.."
             };
 
-            // Inner layout
             var grid = new Grid();
 
-            // Clear button
+            // Left 'Clear' button (clears files only)
             var clearBtn = new Button
+            {
+                Content = "Clear",
+                Width = 34,
+                Height = 18,
+                Padding = new Thickness(0),
+                Margin = new Thickness(-4, -6, 0, 0),
+                HorizontalAlignment = HorizontalAlignment.Left,
+                VerticalAlignment = VerticalAlignment.Top,
+                Background = Brushes.Transparent,
+                BorderBrush = Brushes.Transparent,
+                Foreground = Brushes.Black,
+                FontSize = 12,
+                FontWeight = FontWeights.Bold,
+                Cursor = Cursors.Hand,
+                Tag = bubbleId,
+                ToolTip = "Clear files in this bubble"
+            };
+            clearBtn.Click += ClearBubble_Click;
+
+            // Right '✕' close button (removes bubble)
+            var closeBtn = new Button
             {
                 Content = "✕",
                 Width = 20,
                 Height = 20,
                 Padding = new Thickness(0),
-                Margin = new Thickness(45, -5, 0, 0),
-                HorizontalAlignment = HorizontalAlignment.Left,
+                Margin = new Thickness(0, -6, -4, 0),
+                HorizontalAlignment = HorizontalAlignment.Right,
                 VerticalAlignment = VerticalAlignment.Top,
                 Background = Brushes.Transparent,
                 BorderBrush = Brushes.Transparent,
@@ -84,9 +104,9 @@ namespace DragDropOverlay
                 FontWeight = FontWeights.Bold,
                 Cursor = Cursors.Hand,
                 Tag = bubbleId,
-                ToolTip = "Clear files in this bubble"
+                ToolTip = "Pop bubble"
             };
-            clearBtn.Click += ClearBubble_Click;
+            closeBtn.Click += CloseBubble_Click;
 
             var stack = new StackPanel
             {
@@ -108,7 +128,7 @@ namespace DragDropOverlay
                 Name = "CountText",
                 Text = "0 items",
                 FontSize = 14,
-                Foreground = (Brush)new BrushConverter().ConvertFromString("#F0F0F0"),
+                Foreground = (Brush)(new BrushConverter().ConvertFromString("#F0F0F0") ?? Brushes.White),
                 HorizontalAlignment = HorizontalAlignment.Center
             };
 
@@ -116,31 +136,27 @@ namespace DragDropOverlay
             stack.Children.Add(countText);
 
             grid.Children.Add(clearBtn);
+            grid.Children.Add(closeBtn);
             grid.Children.Add(stack);
 
             bubble.Child = grid;
 
-            // Events
             bubble.MouseLeftButtonDown += Bubble_MouseLeftButtonDown;
             bubble.MouseMove += Bubble_MouseMove;
             bubble.MouseLeftButtonUp += Bubble_MouseLeftButtonUp;
             bubble.DragOver += Bubble_DragOver;
             bubble.Drop += Bubble_Drop;
 
-            // Optional pulse animation per bubble
             if (Resources["PulseStoryboard"] is Storyboard pulse)
             {
                 var anim = pulse.Clone();
                 foreach (var tl in anim.Children.OfType<DoubleAnimation>())
-                {
                     Storyboard.SetTarget(tl, bubble);
-                }
                 anim.Begin();
             }
 
             BubblesPanel.Children.Add(bubble);
             _bubbleFiles[bubbleId] = new List<string>();
-
             UpdateAddBubbleButtonState();
         }
 
@@ -333,6 +349,27 @@ namespace DragDropOverlay
                 e.Effects = DragDropEffects.None;
             }
             e.Handled = true;
+        }
+
+        private void CloseBubble_Click(object? sender, RoutedEventArgs e)
+        {
+            if (sender is Button b && b.Tag is int id)
+            {
+                // Remove bubble from panel
+                var bubble = BubblesPanel.Children
+                    .OfType<Border>()
+                    .FirstOrDefault(bd => bd.Tag is int bid && bid == id);
+                if (bubble != null)
+                    BubblesPanel.Children.Remove(bubble);
+
+                // Remove files from dictionary
+                _bubbleFiles.Remove(id);
+
+                // Optionally clear files from disk
+                FileManager.ClearBubble(id);
+
+                UpdateAddBubbleButtonState();
+            }
         }
 
         private void Kill_Click(object sender, RoutedEventArgs e)
