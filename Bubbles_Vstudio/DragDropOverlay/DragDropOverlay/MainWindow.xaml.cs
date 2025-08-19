@@ -54,12 +54,12 @@ namespace DragDropOverlay
 
             if (_files.Count == 0)
             {
-                Badge.ToolTip = "No files in temp folder.";
+                Bubble.ToolTip = "No files in temp folder.";
             }
             else
             {
                 var names = _files.Select(Path.GetFileName);
-                Badge.ToolTip = string.Join("\n", names);
+                Bubble.ToolTip = string.Join("\n", names);
             }
         }
 
@@ -78,7 +78,7 @@ namespace DragDropOverlay
             {
                 _isDraggingFiles = true;
                 var data = new DataObject(DataFormats.FileDrop, existing);
-                DragDrop.DoDragDrop(Badge, data, DragDropEffects.Copy);
+                DragDrop.DoDragDrop(Bubble, data, DragDropEffects.Copy);
             }
             finally
             {
@@ -88,17 +88,17 @@ namespace DragDropOverlay
 
         private void Root_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
-            if (e.OriginalSource is FrameworkElement fe && fe.Name == "Badge") return;
+            if (e.OriginalSource is FrameworkElement fe && fe.Name == "Bubble") return;
             try { DragMove(); } catch { }
         }
 
-        private void Badge_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        private void Bubble_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
             _dragStartPoint = e.GetPosition(this);
-            Badge.CaptureMouse();
+            Bubble.CaptureMouse();
         }
 
-        private void Badge_MouseMove(object sender, MouseEventArgs e)
+        private void Bubble_MouseMove(object sender, MouseEventArgs e)
         {
             if (e.LeftButton != MouseButtonState.Pressed || _dragStartPoint == null) return;
 
@@ -110,14 +110,14 @@ namespace DragDropOverlay
             {
                 StartFileDrag();
                 _dragStartPoint = null;
-                Badge.ReleaseMouseCapture();
+                Bubble.ReleaseMouseCapture();
             }
         }
 
-        private void Badge_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
+        private void Bubble_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
         {
             _dragStartPoint = null;
-            Badge.ReleaseMouseCapture();
+            Bubble.ReleaseMouseCapture();
         }
 
         private void Reload_Click(object sender, RoutedEventArgs e) => ReloadFiles();
@@ -158,7 +158,7 @@ namespace DragDropOverlay
         private void Exit_Click(object sender, RoutedEventArgs e) => Close();
 
         // Handle drag-over so cursor shows Copy effect
-        private void Badge_DragOver(object sender, DragEventArgs e)
+        private void Bubble_DragOver(object sender, DragEventArgs e)
         {
             if (e.Data.GetDataPresent(DataFormats.FileDrop))
                 e.Effects = DragDropEffects.Copy;
@@ -168,7 +168,7 @@ namespace DragDropOverlay
         }
 
         // Handle drop: copy files into temp dir
-        private void Badge_Drop(object sender, DragEventArgs e)
+        private void Bubble_Drop(object sender, DragEventArgs e)
         {
             if (e.Data.GetDataPresent(DataFormats.FileDrop))
             {
@@ -179,19 +179,19 @@ namespace DragDropOverlay
         }
 
         // Allow dropping anywhere on window background
-        private void Window_DragOver(object sender, DragEventArgs e) => Badge_DragOver(sender, e);
-        private void Window_Drop(object sender, DragEventArgs e) => Badge_Drop(sender, e);
+        private void Window_DragOver(object sender, DragEventArgs e) => Bubble_DragOver(sender, e);
+        private void Window_Drop(object sender, DragEventArgs e) => Bubble_Drop(sender, e);
 
-        private void Badge_ToolTipOpening(object sender, ToolTipEventArgs e)
+        private void Bubble_ToolTipOpening(object sender, ToolTipEventArgs e)
         {
             if (_files == null || _files.Count == 0)
             {
-                Badge.ToolTip = "No files in temp folder.";
+                Bubble.ToolTip = "No files in temp folder.";
                 return;
             }
 
             var names = _files.Select(Path.GetFileName).ToList();
-            Badge.ToolTip = string.Join("\n", names);
+            Bubble.ToolTip = string.Join("\n", names);
         }
     }
 }

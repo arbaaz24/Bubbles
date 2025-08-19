@@ -10,9 +10,9 @@
         AllowDrop="True" Drop="Window_Drop" DragOver="Window_DragOver">
     <Window.Resources>
         <Storyboard x:Key="PulseStoryboard" RepeatBehavior="Forever" AutoReverse="True">
-            <DoubleAnimation Storyboard.TargetName="BadgeScale" Storyboard.TargetProperty="ScaleX"
+            <DoubleAnimation Storyboard.TargetName="BubbleScale" Storyboard.TargetProperty="ScaleX"
                              From="1.0" To="1.1" Duration="0:0:1.2"/>
-            <DoubleAnimation Storyboard.TargetName="BadgeScale" Storyboard.TargetProperty="ScaleY"
+            <DoubleAnimation Storyboard.TargetName="BubbleScale" Storyboard.TargetProperty="ScaleY"
                              From="1.0" To="1.1" Duration="0:0:1.2"/>
         </Storyboard>
     </Window.Resources>
@@ -20,19 +20,19 @@
     <Grid x:Name="Root" Background="Transparent" 
           MouseLeftButtonDown="Root_MouseLeftButtonDown" VerticalAlignment="Center"  HorizontalAlignment="Center" >
 
-        <Border x:Name="Badge" Width="70" Height="70" CornerRadius="35" Margin="0,15,0,0"
+        <Border x:Name="Bubble" Width="70" Height="70" CornerRadius="35" Margin="0,15,0,0"
         HorizontalAlignment="Center" VerticalAlignment="Top" Background="#FF4C7DFF" Opacity="0.83"
-        MouseLeftButtonDown="Badge_MouseLeftButtonDown"
-        MouseMove="Badge_MouseMove"
-        MouseLeftButtonUp="Badge_MouseLeftButtonUp"
-        AllowDrop="True" Drop="Badge_Drop" DragOver="Badge_DragOver"
+        MouseLeftButtonDown="Bubble_MouseLeftButtonDown"
+        MouseMove="Bubble_MouseMove"
+        MouseLeftButtonUp="Bubble_MouseLeftButtonUp"
+        AllowDrop="True" Drop="Bubble_Drop" DragOver="Bubble_DragOver"
         ToolTip="Loading.." Grid.Column="1">
 
             <Border.Effect>
                 <DropShadowEffect ShadowDepth="0" BlurRadius="20" Opacity="0.6"/>
             </Border.Effect>
             <Border.RenderTransform>
-                <ScaleTransform x:Name="BadgeScale" ScaleX="1" ScaleY="1"/>
+                <ScaleTransform x:Name="BubbleScale" ScaleX="1" ScaleY="1"/>
             </Border.RenderTransform>
             <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
                 <Button Content="✕" Foreground="Red" FontWeight="Bold" FontSize="18" Click="Exit_Click" Margin="50,-25,0,0" Width="21" Height="24"/>
@@ -42,7 +42,7 @@
             </StackPanel>
         </Border>
 
-        <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" Margin="0,100,0,0" Grid.Column="1" Grid.ColumnSpan="2" >
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" Margin="0,100,0,0" Grid.Column="15" Grid.ColumnSpan="2" >
             <Button Content="Reload" Click="Reload_Click" Padding="1,1" Margin="1"/>
             <Button Content="Add Files" Click="AddFiles_Click" Padding="1,1" Margin="1"/>
             <Button Content="Open Folder" Click="OpenFolder_Click" Padding="1,1" Margin="1"/>
