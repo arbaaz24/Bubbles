@@ -1,4 +1,7 @@
-﻿using System;
+﻿// =============================
+// File: MainWindow.xaml.cs
+// =============================
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
