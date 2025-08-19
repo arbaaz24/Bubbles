@@ -31,7 +31,6 @@ namespace DragDropOverlay
             try
             {
                 FileManager.EnsureFolder();
-                FileManager.EnsureSampleFile();
                 ReloadFiles(); //Reads files from the folder and updates the UI count
 
                 // So checking if in xaml there is a Storyboard with the name PulseStoryboard
