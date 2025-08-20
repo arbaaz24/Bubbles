@@ -17,16 +17,18 @@ namespace DragDropOverlay
             Directory.CreateDirectory(TempDir);
         }
 
+        // Update EnsureSubFolder to handle bubble 1 properly
         public static void EnsureSubFolder(int bubbleId)
         {
             EnsureFolder();
-            if (bubbleId == 0) return; // root
+            if (bubbleId == 1) return; // root folder already ensured
             var path = GetBubblePath(bubbleId);
             Directory.CreateDirectory(path); // idempotent
         }
 
+        // Update the GetBubblePath method to handle bubble 1 as root for consistency
         private static string GetBubblePath(int bubbleId) =>
-            bubbleId == 0 ? TempDir : Path.Combine(TempDir, $"Bubble_{bubbleId}");
+            bubbleId == 1 ? TempDir : Path.Combine(TempDir, $"Bubble_{bubbleId}");
 
         public static List<string> GetFiles(int bubbleId)
         {
@@ -61,6 +63,25 @@ namespace DragDropOverlay
             {
                 try { File.Delete(f); } catch { }
             }
+        }
+
+        public static void DeleteBubbleFolder(int bubbleId)
+        {
+            if (bubbleId == 0) return; // Don't delete root folder
+            var path = GetBubblePath(bubbleId);
+            if (!Directory.Exists(path)) return;
+            try
+            {
+                Directory.Delete(path, recursive: true);
+            }
+            catch { /* ignore deletion errors */ }
+        }
+
+        // Add this new method to check if a bubble folder exists and has files
+        public static bool BubbleHasFiles(int bubbleId)
+        {
+            var path = GetBubblePath(bubbleId);
+            return Directory.Exists(path) && Directory.EnumerateFiles(path).Any();
         }
     }
 }
