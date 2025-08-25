@@ -1,10 +1,10 @@
 ﻿// =============================
 // File: MainWindow.xaml.cs
 // =============================
-using Microsoft.Win32;
+//using Microsoft.Win32;  // Commented out - used only for debugging functions
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
+//using System.Diagnostics;  // Commented out - used only for debugging functions
 using System.IO;
 using System.Linq;
 using System.Windows;
@@ -34,7 +34,7 @@ namespace DragDropOverlay
             {
                 // Restore bubbles from existing folders
                 RestoreExistingBubbles();
-                
+
                 // If no bubbles exist, create the default bubble
                 if (BubblesPanel.Children.Count == 0)
                 {
@@ -58,7 +58,7 @@ namespace DragDropOverlay
                 AddBubble(1);
                 ReloadFiles(1);
             }
-            
+
             // Then check for existing bubble folders (2-7)
             for (int i = 2; i <= MaxBubbles; i++)
             {
@@ -74,7 +74,7 @@ namespace DragDropOverlay
         private void AddBubble_Click(object sender, RoutedEventArgs e)
         {
             if (BubblesPanel.Children.Count >= MaxBubbles) return;
-            
+
             // Find the lowest available ID from 1 to 7
             int newId = GetNextAvailableBubbleId();
             if (newId <= MaxBubbles)
@@ -209,11 +209,11 @@ namespace DragDropOverlay
         private void InsertBubbleInOrder(Border newBubble, int bubbleId)
         {
             int insertIndex = 0;
-            
+
             // Find the correct position to insert the new bubble
             for (int i = 0; i < BubblesPanel.Children.Count; i++)
             {
-                if (BubblesPanel.Children[i] is Border existingBubble && 
+                if (BubblesPanel.Children[i] is Border existingBubble &&
                     existingBubble.Tag is int existingId)
                 {
                     if (bubbleId < existingId)
@@ -224,7 +224,7 @@ namespace DragDropOverlay
                     insertIndex = i + 1;
                 }
             }
-            
+
             BubblesPanel.Children.Insert(insertIndex, newBubble);
         }
 
@@ -240,13 +240,57 @@ namespace DragDropOverlay
             }
         }
 
-        private void Reload_Click(object sender, RoutedEventArgs e) => ReloadAll();
+        //***** COMMENTED OUT DEBUGGING METHODS - UNCOMMENT IF NEEDED FOR DEBUGGING *****
 
-        private void ReloadAll()
-        {
-            foreach (var id in _bubbleFiles.Keys.ToList())
-                ReloadFiles(id);
-        }
+        //private void Reload_Click(object sender, RoutedEventArgs e) => ReloadAll();
+
+        //private void ReloadAll()
+        //{
+        //    foreach (var id in _bubbleFiles.Keys.ToList())
+        //        ReloadFiles(id);
+        //}
+
+        //private void AddFiles_Click(object sender, RoutedEventArgs e)
+        //{
+        //    if (!_bubbleFiles.ContainsKey(1))
+        //        AddBubble(1);
+
+        //    var dlg = new OpenFileDialog
+        //    {
+        //        Multiselect = true,
+        //        Title = "Select files to add to bubble 1"
+        //    };
+        //    if (dlg.ShowDialog() == true)
+        //    {
+        //        FileManager.SaveDroppedFiles(1, dlg.FileNames);
+        //        ReloadFiles(1);
+        //    }
+        //}
+
+        //private void OpenFolder_Click(object sender, RoutedEventArgs e)
+        //{
+        //    try
+        //    {
+        //        FileManager.EnsureFolder();
+        //        Process.Start(new ProcessStartInfo
+        //        {
+        //            FileName = FileManager.TempDir,
+        //            UseShellExecute = true,
+        //            Verb = "open"
+        //        });
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        MessageBox.Show("Open folder failed: " + ex.Message);
+        //    }
+        //}
+
+        //private void Kill_Click(object sender, RoutedEventArgs e)
+        //{
+        //    Application.Current.Shutdown();
+        //}
+
+        //***** END COMMENTED OUT DEBUGGING METHODS *****
 
         private void ReloadFiles(int bubbleId)
         {
@@ -280,41 +324,6 @@ namespace DragDropOverlay
                 if (result != null) return result;
             }
             return null;
-        }
-
-        private void AddFiles_Click(object sender, RoutedEventArgs e)
-        {
-            if (!_bubbleFiles.ContainsKey(1))
-                AddBubble(1);
-
-            var dlg = new OpenFileDialog
-            {
-                Multiselect = true,
-                Title = "Select files to add to bubble 1"
-            };
-            if (dlg.ShowDialog() == true)
-            {
-                FileManager.SaveDroppedFiles(1, dlg.FileNames);
-                ReloadFiles(1);
-            }
-        }
-
-        private void OpenFolder_Click(object sender, RoutedEventArgs e)
-        {
-            try
-            {
-                FileManager.EnsureFolder();
-                Process.Start(new ProcessStartInfo
-                {
-                    FileName = FileManager.TempDir,
-                    UseShellExecute = true,
-                    Verb = "open"
-                });
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show("Open folder failed: " + ex.Message);
-            }
         }
 
         private void Root_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
@@ -393,7 +402,7 @@ namespace DragDropOverlay
                 var files = (string[])e.Data.GetData(DataFormats.FileDrop);
                 FileManager.SaveDroppedFiles(id, files);
                 ReloadFiles(id);
-                ReloadAll(); // Reload all bubbles to ensure UI consistency
+                //ReloadAll(); // Commented out - no longer needed without ReloadAll method
                 e.Handled = true; // Prevent Window_Drop from also adding to bubble 0
             }
         }
@@ -404,7 +413,7 @@ namespace DragDropOverlay
             var files = (string[])e.Data.GetData(DataFormats.FileDrop);
             FileManager.SaveDroppedFiles(1, files);
             ReloadFiles(1);
-            ReloadAll(); // Reload all bubbles to ensure UI consistency
+            //ReloadAll(); // Commented out - no longer needed without ReloadAll method
         }
 
         private void Window_DragOver(object sender, DragEventArgs e)
@@ -433,32 +442,30 @@ namespace DragDropOverlay
                 // FileManager.DeleteBubbleFolder(id);  // Commented out
 
                 UpdateAddBubbleButtonState();
-                
+
                 // Ensure remaining bubbles are still in correct order
-                SortBubblesInPanel();
+                //SortBubblesInPanel(); // Commented out - redundant since InsertBubbleInOrder handles sorting
             }
         }
 
-        // Add this helper method to sort existing bubbles (optional, for extra safety)
-        private void SortBubblesInPanel()
-        {
-            var bubbles = BubblesPanel.Children
-                .OfType<Border>()
-                .Where(b => b.Tag is int)
-                .OrderBy(b => (int)b.Tag)
-                .ToList();
-            
-            BubblesPanel.Children.Clear();
-            
-            foreach (var bubble in bubbles)
-            {
-                BubblesPanel.Children.Add(bubble);
-            }
-        }
+        //***** COMMENTED OUT REDUNDANT METHOD - InsertBubbleInOrder already handles sorting *****
 
-        private void Kill_Click(object sender, RoutedEventArgs e)
-        {
-            Application.Current.Shutdown();
-        }
+        //private void SortBubblesInPanel()
+        //{
+        //    var bubbles = BubblesPanel.Children
+        //        .OfType<Border>()
+        //        .Where(b => b.Tag is int)
+        //        .OrderBy(b => (int)b.Tag)
+        //        .ToList();
+        //    
+        //    BubblesPanel.Children.Clear();
+        //    
+        //    foreach (var bubble in bubbles)
+        //    {
+        //        BubblesPanel.Children.Add(bubble);
+        //    }
+        //}
+
+        //***** END COMMENTED OUT REDUNDANT METHOD *****
     }
 }
