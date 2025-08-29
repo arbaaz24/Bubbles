@@ -123,7 +123,7 @@ namespace DragDropOverlay
                 VerticalAlignment = VerticalAlignment.Top,
                 Background = Brushes.Transparent,
                 BorderBrush = Brushes.Transparent,
-                Foreground = Brushes.Black,
+                Foreground = Brushes.Black,  // Changed from Brushes.Black to Brushes.Orange
                 FontSize = 12,
                 FontWeight = FontWeights.Bold,
                 Cursor = Cursors.Hand,
