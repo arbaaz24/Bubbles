@@ -6,6 +6,41 @@
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <UseWPF>true</UseWPF>
+    
+    <!-- Application Information -->
+    <AssemblyTitle>Bubbles</AssemblyTitle>
+    <AssemblyDescription>A bubble-based file drag and drop overlay application</AssemblyDescription>
+    <AssemblyCompany>Your Name</AssemblyCompany>
+    <AssemblyProduct>Bubbles</AssemblyProduct>
+    <AssemblyVersion>1.0.0.0</AssemblyVersion>
+    <FileVersion>1.0.0.0</FileVersion>
+    <Copyright>Copyright © 2025</Copyright>
+    <AssemblyName>Bubbles</AssemblyName>
+    <RootNamespace>Bubbles</RootNamespace>
+    
+    <!-- Icon Configuration -->
+    <ApplicationIcon>icon.ico</ApplicationIcon>
+    
+    <!-- Self-Contained Publishing Configuration -->
+    <PublishSingleFile>true</PublishSingleFile>
+    <SelfContained>true</SelfContained>
+    <RuntimeIdentifier>win-x64</RuntimeIdentifier>
+    <PublishReadyToRun>true</PublishReadyToRun>
+    <IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
+    <EnableCompressionInSingleFile>true</EnableCompressionInSingleFile>
+    
+    <!-- Trim unused code to reduce file size -->
+    <PublishTrimmed>false</PublishTrimmed>
   </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="icon.ico" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="icon.ico">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
 
 </Project>

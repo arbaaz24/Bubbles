@@ -12,8 +12,10 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
+using System.Windows.Shapes;
+using IOPath = System.IO.Path;
 
-namespace DragDropOverlay
+namespace Bubbles
 {
     public partial class MainWindow : Window
     {
@@ -309,7 +311,7 @@ namespace DragDropOverlay
 
             bubble.ToolTip = files.Count == 0
                 ? $"Bubble {bubbleId}: No files"
-                : $"Bubble {bubbleId}:\n" + string.Join("\n", files.Select(Path.GetFileName));
+                : $"Bubble {bubbleId}:\n" + string.Join("\n", files.Select(IOPath.GetFileName));
         }
 
         private static T? FindDescendant<T>(DependencyObject parent, string name) where T : FrameworkElement

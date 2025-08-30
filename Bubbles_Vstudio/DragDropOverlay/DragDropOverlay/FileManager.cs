@@ -6,11 +6,11 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 
-namespace DragDropOverlay
+namespace Bubbles
 {
     public static class FileManager
     {
-        public static readonly string TempDir = Path.Combine(Path.GetTempPath(), "DragDropOverlay");
+        public static readonly string TempDir = Path.Combine(Path.GetTempPath(), "Bubbles");
 
         public static void EnsureFolder()
         {
