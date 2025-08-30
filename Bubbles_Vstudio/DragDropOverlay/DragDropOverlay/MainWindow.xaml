@@ -24,19 +24,19 @@
             <Setter Property="Margin" Value="0,15,0,0"/>
             <Setter Property="HorizontalAlignment" Value="Center"/>
             <Setter Property="VerticalAlignment" Value="Top"/>
-            <Setter Property="Opacity" Value="0.65"/> <!-- Increased from 0.5 to 0.65 (30% increase) -->
+            <Setter Property="Opacity" Value="0.8"/> <!-- Increased from 0.5 to 0.65 (30% increase) -->
             <Setter Property="AllowDrop" Value="True"/>
             <Setter Property="Background">
                 <Setter.Value>
-                    <RadialGradientBrush GradientOrigin="0.3,0.3" Center="0.3,0.3" RadiusX="1" RadiusY="1">
+                    <RadialGradientBrush GradientOrigin="0.7,0.7" Center="0.7,0.7" RadiusX="1" RadiusY="1">
                         <GradientStop Color="Blue" Offset="0.2"/>
-                        <GradientStop Color="#61da4c" Offset="1.0"/>
+                        <GradientStop Color="#61da4c" Offset="1"/>
                     </RadialGradientBrush>
                 </Setter.Value>
             </Setter>
             <Setter Property="Effect">
                 <Setter.Value>
-                    <DropShadowEffect ShadowDepth="0" BlurRadius="20" Opacity="0.6"/>
+                    <DropShadowEffect ShadowDepth="0" BlurRadius="15" Opacity="0.6"/>
                 </Setter.Value>
             </Setter>
             <Setter Property="RenderTransform">
