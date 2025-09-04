@@ -7,33 +7,45 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <UseWPF>true</UseWPF>
 
+    <!-- Common self-contained settings -->
+    <SelfContained>true</SelfContained>
+    <PublishSingleFile>true</PublishSingleFile>
+    <PublishReadyToRun>true</PublishReadyToRun>
+    <IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
+
     <!-- App metadata -->
     <AssemblyTitle>Bubbles</AssemblyTitle>
     <AssemblyCompany>Your Name</AssemblyCompany>
     <AssemblyProduct>Bubbles</AssemblyProduct>
-    <AssemblyVersion>1.0.0.0</AssemblyVersion>
-    <FileVersion>1.0.0.0</FileVersion>
+    <AssemblyName>Bubbles</AssemblyName>
+    <RootNamespace>Bubbles</RootNamespace>
+    <ApplicationIcon>icon.ico</ApplicationIcon>
 
-    <!-- ClickOnce / Publish settings -->
-    <GenerateManifests>true</GenerateManifests>
-    <BootstrapperEnabled>true</BootstrapperEnabled>
-    <PublishUrl>publish\</PublishUrl>
-    <ApplicationRevision>1</ApplicationRevision>
-    <ApplicationVersion>1.0.0.0</ApplicationVersion>
-    <CreateWebPageOnPublish>true</CreateWebPageOnPublish>
+    <!-- Increment these for each new release -->
+    <AssemblyVersion>1.9.2.0</AssemblyVersion>
+    <FileVersion>1.9.2.0</FileVersion>
+    <Platforms>AnyCPU;x86</Platforms>
+  </PropertyGroup>
+
+  <!-- Build per-platform by selecting Platform in VS Configuration Manager -->
+  <PropertyGroup Condition="'$(Platform)'=='x86'">
+    <PlatformTarget>x86</PlatformTarget>
+    <RuntimeIdentifier>win-x86</RuntimeIdentifier>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Platform)'=='x64'">
+    <PlatformTarget>x64</PlatformTarget>
+    <RuntimeIdentifier>win-x64</RuntimeIdentifier>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Platform)'=='ARM64'">
+    <PlatformTarget>ARM64</PlatformTarget>
+    <RuntimeIdentifier>win-arm64</RuntimeIdentifier>
   </PropertyGroup>
 
   <ItemGroup>
-    <!-- Required to use ClickOnce runtime API from UpdateManager -->
-    <Reference Include="System.Deployment" />
-    <Reference Include="System.Windows.Forms" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Remove="icon.ico" />
     <Content Include="icon.ico">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
-
 </Project>

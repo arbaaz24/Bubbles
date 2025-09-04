@@ -24,7 +24,8 @@
             <Setter Property="Margin" Value="0,15,0,0"/>
             <Setter Property="HorizontalAlignment" Value="Center"/>
             <Setter Property="VerticalAlignment" Value="Top"/>
-            <Setter Property="Opacity" Value="0.8"/> <!-- Increased from 0.5 to 0.65 (30% increase) -->
+            <Setter Property="Opacity" Value="0.8"/>
+            <!-- Increased from 0.5 to 0.65 (30% increase) -->
             <Setter Property="AllowDrop" Value="True"/>
             <Setter Property="Background">
                 <Setter.Value>
@@ -92,15 +93,52 @@
             <RowDefinition Height="*"/>
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
-        
+
         <!-- Header at top -->
         <Border Background="Black" Grid.Row="0" Height="30">
-            <TextBlock Text="Bubbles" 
-                       FontSize="24" FontWeight="Bold"
-                       HorizontalAlignment="Center" VerticalAlignment="Center" 
-                       Foreground="white"/>
+            <Grid>
+                <TextBlock Text="Bubbles" 
+                           FontSize="24" FontWeight="Bold"
+                           HorizontalAlignment="Center" VerticalAlignment="Center" 
+                           Foreground="white"/>
+                <Button x:Name="CloseAppButton"
+                        Width="20" Height="20"
+                        HorizontalAlignment="Right" VerticalAlignment="Top"
+                        Margin="0,-4,-4,0"
+                        ToolTip="Close application"
+                        Click="CloseAppButton_Click"
+                        Cursor="Hand">
+                    <Button.Template>
+                        <ControlTemplate TargetType="Button">
+                            <Border x:Name="Circle"
+                                    Background="Transparent"
+                                    BorderBrush="Transparent"
+                                    CornerRadius="6"
+                                    Width="12" Height="12">
+                                <Viewbox>
+                                    <Canvas Width="16" Height="16">
+                                        <Path Data="M2,2 L14,14 M14,2 L2,14"
+                                              Stroke="Red"
+                                              StrokeThickness="2"
+                                              StrokeStartLineCap="Round"
+                                              StrokeEndLineCap="Round"/>
+                                    </Canvas>
+                                </Viewbox>
+                            </Border>
+                            <ControlTemplate.Triggers>
+                                <Trigger Property="IsMouseOver" Value="True">
+                                    <Setter TargetName="Circle" Property="Background" Value="#FFF0F0F0"/>
+                                </Trigger>
+                                <Trigger Property="IsPressed" Value="True">
+                                    <Setter TargetName="Circle" Property="Background" Value="#FFE0E0E0"/>
+                                </Trigger>
+                            </ControlTemplate.Triggers>
+                        </ControlTemplate>
+                    </Button.Template>
+                </Button>
+            </Grid>
         </Border>
-        
+
         <!-- Dynamic bubbles container in middle -->
         <WrapPanel x:Name="BubblesPanel" HorizontalAlignment="Center" VerticalAlignment="Center"
                    Orientation="Vertical" Grid.Row="1" Margin="10"/>
@@ -111,7 +149,7 @@
                     Style="{StaticResource AddBubbleStyle}" 
                     Margin="5" ToolTip="Make bubble"/>
         </StackPanel>
-        
+
         <!--Un-comment below code to see debugging code-->
         <!--StackPanel Orientation="Horizontal" HorizontalAlignment="Left" Width="Auto" Grid.Row="2">
             <Button Content="Reload" Click="Reload_Click" Padding="1,1" Margin="1" Grid.Row="2"/>
