@@ -23,7 +23,6 @@ namespace Bubbles
         private Point? _dragStartPoint;
         private bool _isDraggingFiles;
         private const int MaxBubbles = 7;
-        private bool _isCollapsed = false; // Add this field
 
         public MainWindow()
         {
@@ -474,39 +473,6 @@ namespace Bubbles
         private void CloseAppButton_Click(object sender, RoutedEventArgs e)
         {
             Application.Current.Shutdown();
-        }
-
-        // Add this method after the CloseAppButton_Click method
-        private void CollapseButton_Click(object sender, RoutedEventArgs e)
-        {
-            _isCollapsed = !_isCollapsed;
-            
-            if (_isCollapsed)
-            {
-                // Hide bubbles and add button
-                BubblesPanel.Visibility = Visibility.Collapsed;
-                AddBubbleButton.Visibility = Visibility.Collapsed;
-                CollapseButton.ToolTip = "Show bubbles";
-                
-                // Update icon to show expand state (arrow pointing right)
-                if (CollapseButton.Template?.FindName("CollapseIcon", CollapseButton) is Path icon)
-                {
-                    icon.Data = Geometry.Parse("M6,2 L14,8 L6,14");
-                }
-            }
-            else
-            {
-                // Show bubbles and add button
-                BubblesPanel.Visibility = Visibility.Visible;
-                AddBubbleButton.Visibility = Visibility.Visible;
-                CollapseButton.ToolTip = "Hide bubbles";
-                
-                // Update icon to show collapse state (hamburger menu)
-                if (CollapseButton.Template?.FindName("CollapseIcon", CollapseButton) is Path icon)
-                {
-                    icon.Data = Geometry.Parse("M2,4 L14,4 M2,8 L14,8 M2,12 L14,12");
-                }
-            }
         }
     }
 }
